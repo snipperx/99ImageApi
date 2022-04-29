@@ -12,7 +12,7 @@ use Kreait\Firebase\Auth as FirebaseAuth;
 use Google\Cloud\Firestore\FirestoreClient;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Auth\SignInResult\SignInResult;
-
+use PhpParser\Node\Stmt\Foreach_;
 
 class ImagesController extends Controller {
     /**
@@ -24,27 +24,32 @@ class ImagesController extends Controller {
     public function get_data() {
 
 
-        $userImages = DB::table('images')
-        ->select('images.*', 'users.firstName as first_Name', 'users.lastName as last_Name', 'users.story as story')
-        ->leftJoin('users', 'images.user_id', '=', 'users.id')
-        ->where('users.optIn', 1)
-        ->orderBy('images.id')
-        ->get();
+
+        $userImages = User::where('optIn', 1)->get()->load(['images' => function ($query) {
+            $query->orderBy('id', 'asc');
+        }]);
 
 
 
-     dd($userImages);
+
+        $newArr = array();
+
+        foreach($userImages as $val){
+            $newArr[$val->original][] = (array)$val;
+        }
 
 
+
+        dd($newArr);
 
         return response()->json( [
-            'name' => $userImages['name'],
+             'firstName' => 'Not allowed',
+             'lastName' => 'Not allowed',
+             'story' => 'Not allowed',
+             'images' => 'images'
 
-            // 'image' = $image;
-        ] );
+            ], 200 );
     }
-
-
 
     /**
     * Store a newly created resource in storage.
@@ -64,7 +69,6 @@ class ImagesController extends Controller {
         $student   = app( 'firebase.firestore' )->database()->collection( 'Images' )->document( $imageName );
         $firebase_storage_path = 'Images/';
         $name     = $student->id();
-        //  fo
 
         $localfolder = public_path( 'firebase-temp-uploads' ) .'/';
         $extension = $request->image->extension();
@@ -85,7 +89,7 @@ class ImagesController extends Controller {
                 unlink( $localfolder . $file );
 
                 // $file
-                $urls =  $this->getLink($file);
+                $urls =  $this->getLink( $file );
 
                 Images::create( [
                     'name' => $imageName,
@@ -104,10 +108,7 @@ class ImagesController extends Controller {
 
         }
 
-
-
-
-        private function getLink($url){
+        private function getLink( $url ) {
 
             $expiresAt = new \DateTime( 'tomorrow' );
             $imageReference = app( 'firebase.storage' )->getBucket()->object( 'Images/'. $url );
@@ -122,3 +123,6 @@ class ImagesController extends Controller {
         }
 
     }
+
+
+
