@@ -23,8 +23,6 @@ Route::post('/register',[AuthController::class,'register']);
 
 Route::middleware('auth:sanctum')->group( function () {
     Route::post('/upload_img',[ImagesController::class, 'store']);
-    Route::post('/logout',[AuthController::class, 'logout']);
+    Route::get('/get_images', [ImagesController::class, 'get_data']);
 });
 
-
- Route::get('/show', [ImagesController::class, 'get_data']);

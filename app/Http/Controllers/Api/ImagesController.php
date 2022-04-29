@@ -23,30 +23,25 @@ class ImagesController extends Controller {
 
     public function get_data() {
 
-
-
         $userImages = User::where('optIn', 1)->get()->load(['images' => function ($query) {
             $query->orderBy('id', 'asc');
         }]);
 
 
-
-
         $newArr = array();
+
+        $imageArr = array();
 
         foreach($userImages as $val){
             $newArr[$val->original][] = (array)$val;
         }
 
-
-
-        dd($newArr);
-
+        // Todo
         return response()->json( [
-             'firstName' => 'Not allowed',
-             'lastName' => 'Not allowed',
-             'story' => 'Not allowed',
-             'images' => 'images'
+             'firstName' => 'firstName',
+             'lastName' => 'lastName',
+             'story' => 'story',
+             'images' => 'images[]'
 
             ], 200 );
     }
