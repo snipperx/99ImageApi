@@ -26,4 +26,4 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::get('/get_images', [ImagesController::class, 'get_data']);
 });
 
-Route::get('/get_images', [ImagesController::class, 'get_data']);
+// Route::get('/get_images', [ImagesController::class, 'get_data']);
