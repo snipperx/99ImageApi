@@ -43,6 +43,6 @@ class User extends Authenticatable {
     ];
 
     public function images() {
-        return $this->hasOne( Images::class );
+        return $this->hasMany( Images::class );
     }
 }
