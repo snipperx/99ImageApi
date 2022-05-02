@@ -9,6 +9,7 @@ class Images extends Model {
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'name',
         'path',
         'user_id'
@@ -16,6 +17,7 @@ class Images extends Model {
 
     public function user() {
         return $this->belongsTo( User::class );
-
     }
+
+    // helper funtion
 }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ImagesResource;
 use Kreait\Firebase\Auth as FirebaseAuth;
 use Google\Cloud\Firestore\FirestoreClient;
 use Kreait\Firebase\Exception\FirebaseException;
@@ -18,37 +19,16 @@ class ImagesController extends Controller {
     /**
     * Display a listing of the resource.
     *
-    * @return \Illuminate\Http\Response
-    */
+    * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
 
     public function get_data() {
 
-
-        $users = DB::table('users')
-            ->join('images', 'users.id', '=', 'images.user_id')
-            ->select('users.firstName','users.lastName','users.story', 'images.name', 'images.path')
-            ->where('users.optIn',1)
-            ->orderBy('users.id')
-            ->get();
-
-
-
-        $newArr = array();
-
-        $imageArr = array();
-
-        foreach($users as $val){
-            $newArr[$val->path][] = (array)$val;
-        }
-
-
-        return response()->json( [
-             'firstName' => 'firstName',
-             'lastName' => 'lastName',
-             'story' => 'story',
-             'images' => 'images[]'
-
-            ], 200 );
+        return ImagesResource::collection(DB::table('users')
+            ->select('images.*', 'users.*')
+            ->join('images','users.id','=','images.user_id')
+            ->where( 'users.optIn', 1 )
+            ->get());
     }
 
     /**
@@ -122,7 +102,19 @@ class ImagesController extends Controller {
             return $image;
         }
 
+        public function getImages(){
+
+            return ImagesResource::collection(DB::table('users')
+                ->select('images.*', 'users.*')
+                ->join('images','users.id','=','images.user_id')
+                ->where( 'users.optIn', 1 )
+                ->get());
+
+////
+//              return  ImagesResource::collection(images);
+
+
     }
 
-
+    }
 
